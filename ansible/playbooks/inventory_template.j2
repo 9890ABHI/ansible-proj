@@ -1,0 +1,7 @@
+[master]
+{{ master_instance.instances[0].public_ip_address }} ansible_ssh_user=ubuntu
+
+[compute]
+{% for instance in compute_instances.instances %}
+{{ instance.public_ip_address }} ansible_ssh_user=ubuntu
+{% endfor %}

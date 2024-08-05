@@ -46,3 +46,10 @@
     - name: Output compute instances details
       debug:
         msg: "Compute instances created with IDs: {{ compute_instances.instance_ids }} and Public IPs: {{ compute_instances.instances | map(attribute='public_ip_address') | list }}"
+
+
+    
+    - name: Write IPs to inventory file
+      template:
+        src: inventory_template.j2
+        dest: inventory.ini

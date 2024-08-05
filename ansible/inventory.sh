@@ -15,27 +15,43 @@ export KEY_NAME=boot-1
 export IMAGE_NAME=ami-04a81a99f5ec58529
 export SUBNET_NAME=subnet-0af822569e9483069
 
-echo $key_name
-echo $image_name
-echo $subnet_id
-
-
+# echo $key_name
+# echo $image_name
+# echo $subnet_id
 
 # Run the provisioning playbook and capture output
 ansible-playbook playbooks/provision-ec2.yml | tee provision-output.txt
 
-# Extract IPs from the output
-master_ip=$(grep 'Public IP: ' provision-output.txt | grep 'master' | awk '{print $NF}')
-compute_ips=$(grep 'Public IPs: ' provision-output.txt | awk '{print $NF}' | tr -d '[],')
+echo "# ==================== "
+echo ""
+if echo $? == 0;
+then
+  echo "Instances Created successfully" 
+fi
+echo "# ==================== "
 
-# Write to inventory file
-cat <<EOL > inventory.ini
-[master]
-$master_ip ansible_ssh_user=ubuntu
 
-[compute]
-$compute_ips ansible_ssh_user=ubuntu
+# # Extract IPs from the output
+# master_ip=$(grep 'Public IP: ' provision-output.txt | grep 'master' | awk '{print $NF}')
+# compute_ips=$(grep 'Public IPs: ' provision-output.txt | awk '{print $NF}' | tr -d '[],')
 
-#[all:vars]
-#ansible_ssh_private_key_file=/path/to/your/private-key.pem
-EOL
+
+# give the permision to .pem ey
+chmod 0600 ~/.ssh/boot-1.pem
+
+
+# # Write to inventory file
+# cat <<EOL > inventory.ini
+# [master]
+# $master_ip ansible_ssh_user=ubuntu
+
+# [compute]
+# $compute_ips ansible_ssh_user=ubuntu
+
+# [all:vars]
+# ansible_ssh_private_key_file=~/.ssh/boot-1.pem
+# EOL
+
+
+
+

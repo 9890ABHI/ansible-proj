@@ -1,0 +1,33 @@
+- name: Install Ansible and Slurm
+  hosts: master, compute
+  become: yes
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Ansible
+      apt:
+        name: ansible
+        state: present
+
+    - name: Install Slurm
+      apt:
+        name:
+          - slurm-wlm
+          - slurm-wlm-basic-plugins
+          - slurm-wlm-torque
+        state: present
+
+    - name: Ensure Slurm service is running
+      service:
+        name: slurmctld
+        state: started
+        enabled: yes
+
+    - name: Ensure Slurm service is running on compute nodes
+      service:
+        name: slurmd
+        state: started
+        enabled: yes
+      when: inventory_hostname != 'master'
