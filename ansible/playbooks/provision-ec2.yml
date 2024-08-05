@@ -23,7 +23,7 @@
 
     - name: Launch compute EC2 instances
       amazon.aws.ec2_instance:
-        name: my-ec2-compute
+        name: my-ec2-compute-{{ item }}
         key_name: "{{ lookup('env', 'KEY_NAME') }}"
         region: us-east-1
         instance_type: t2.micro

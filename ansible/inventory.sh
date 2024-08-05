@@ -70,7 +70,8 @@ aws ec2 describe-instances \
 
 # Update /etc/hosts
 echo "Updating /etc/hosts..."
-cat private_ips.txt | sudo tee -a /etc/hosts
+# cat private_ips.txt | sudo tee -a /etc/hosts
+cat instance_ips.txt | sudo tee -a /etc/hosts
 
 echo "Update complete!"
 
