@@ -5,3 +5,7 @@
 {% for instance in compute_instances.instances %}
 {{ instance.public_ip_address }} ansible_ssh_user=ubuntu
 {% endfor %}
+
+
+[all:vars]
+ansible_ssh_private_key_file=~/.ssh/boot-1.pem
