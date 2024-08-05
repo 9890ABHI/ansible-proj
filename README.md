@@ -37,6 +37,6 @@ then copy your .pem key and paste in .ssh dir
 ```bash
 
 nano boot-1.pem
-chmod 0400 boot-1.pem
- 
+chmod 0600 boot-1.pem
+
 ```

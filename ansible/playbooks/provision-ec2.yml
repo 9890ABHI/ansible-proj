@@ -16,8 +16,7 @@
         tags:
           Name: my-ec2-master
           Role: master
-        security_groups:
-          - default
+        security_groups: launch-wizard-11
         count: 1
       register: master_instance
 
@@ -34,8 +33,7 @@
         tags:
           Name: my-ec2-compute
           Role: compute
-        security_groups:
-          - default
+        security_groups: launch-wizard-11
         count: 2
       register: compute_instances
 
