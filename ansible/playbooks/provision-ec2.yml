@@ -52,4 +52,4 @@
     - name: Write IPs to inventory file
       template:
         src: inventory_template.j2
-        dest: inventory.ini
+        dest: ../inventory.ini
