@@ -54,4 +54,23 @@ chmod 0600 ~/.ssh/boot-1.pem
 
 
 
+# Get private IPs
+# id private_ip 
+
+# aws ec2 describe-instances \
+#     --query "Reservations[*].Instances[*].[InstanceId,PrivateIpAddress]" \
+#     --output text > private_ips.txt
+
+
+# id private_ip public_ip 
+aws ec2 describe-instances \
+    --query "Reservations[*].Instances[*].[InstanceId,PrivateIpAddress,PublicIpAddress]" \
+    --output text | awk '{printf "%s %s %s\n", $1, $2, $3}' > instance_ips.txt
+
+
+# Update /etc/hosts
+echo "Updating /etc/hosts..."
+cat private_ips.txt | sudo tee -a /etc/hosts
+
+echo "Update complete!"
 

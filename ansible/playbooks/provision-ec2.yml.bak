@@ -16,7 +16,6 @@
         tags:
           Name: my-ec2-master
           Role: master
-          Hostname: master
         security_groups: launch-wizard-11
         count: 1
       register: master_instance
@@ -34,10 +33,8 @@
         tags:
           Name: my-ec2-compute
           Role: compute
-          Hostname: compute_{{ item.index }}
         security_groups: launch-wizard-11
         count: 2
-      loop: "{{ range(1, 3) | list }}"  # Generate 2 compute nodes with unique indices
       register: compute_instances
 
     - name: Output master instance details
@@ -48,6 +45,8 @@
       debug:
         msg: "Compute instances created with IDs: {{ compute_instances.instance_ids }} and Public IPs: {{ compute_instances.instances | map(attribute='public_ip_address') | list }}"
 
+
+    
     - name: Write IPs to inventory file
       template:
         src: inventory_template.j2
