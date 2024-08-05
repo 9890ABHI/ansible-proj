@@ -6,13 +6,13 @@
     - name: Launch master EC2 instance
       amazon.aws.ec2_instance:
         name: my-ec2-master
-        key_name: boot-1
+        key_name: "{{ lookup('env', 'KEY_NAME') }}"
         region: us-east-1
         instance_type: t2.micro
-        image_id: ami-04a81a99f5ec58529
+        image_id: "{{ lookup('env', 'IMAGE_NAME') }}"
         wait: yes
         state: present
-        subnet_id: subnet-0af822569e9483069
+        subnet_id: "{{ lookup('env', 'SUBNET_NAME') }}"
         tags:
           Name: my-ec2-master
           Role: master
@@ -24,13 +24,13 @@
     - name: Launch compute EC2 instances
       amazon.aws.ec2_instance:
         name: my-ec2-compute
-        key_name: boot-1
+        key_name: "{{ lookup('env', 'KEY_NAME') }}"
         region: us-east-1
         instance_type: t2.micro
-        image_id: ami-04a81a99f5ec58529
+        image_id: "{{ lookup('env', 'IMAGE_NAME') }}"
         wait: yes
         state: present
-        subnet_id: subnet-0af822569e9483069
+        subnet_id: "{{ lookup('env', 'SUBNET_NAME') }}"
         tags:
           Name: my-ec2-compute
           Role: compute
