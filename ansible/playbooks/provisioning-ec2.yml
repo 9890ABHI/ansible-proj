@@ -1,0 +1,48 @@
+---
+- name: Provision EC2 instances
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Launch master EC2 instance
+      amazon.aws.ec2_instance:
+        name: my-ec2-master
+        key_name: booter
+        region: us-east-1
+        instance_type: t2.micro
+        image_id: ami-04a81a99f5ec58529
+        wait: yes
+        state: present
+        subnet_id: subnet-0976d99eaf7930ce8
+        tags:
+          Name: my-ec2-master
+          Role: master
+        security_groups:
+          - default
+        count: 1
+      register: master_instance
+
+    - name: Launch compute EC2 instances
+      amazon.aws.ec2_instance:
+        name: my-ec2-compute
+        key_name: booter
+        region: us-east-1
+        instance_type: t2.micro
+        image_id: ami-04a81a99f5ec58529
+        wait: yes
+        state: present
+        subnet_id: subnet-0976d99eaf7930ce8
+        tags:
+          Name: my-ec2-compute
+          Role: compute
+        security_groups:
+          - default
+        count: 2
+      register: compute_instances
+
+    - name: Output master instance details
+      debug:
+        msg: "Master instance created with ID: {{ master_instance.instance_ids[0] }} and Public IP: {{ master_instance.instances[0].public_ip_address }}"
+
+    - name: Output compute instances details
+      debug:
+        msg: "Compute instances created with IDs: {{ compute_instances.instance_ids }} and Public IPs: {{ compute_instances.instances | map(attribute='public_ip_address') | list }}"
