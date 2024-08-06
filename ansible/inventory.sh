@@ -65,7 +65,7 @@ chmod 0600 ~/.ssh/boot-1.pem
 # id private_ip public_ip 
 aws ec2 describe-instances \
     --query "Reservations[*].Instances[*].[InstanceId,PrivateIpAddress,PublicIpAddress]" \
-    --output text | awk '{printf "%s %s %s\n", $1, $2, $3}' > instance_ips.txt
+    --output text | awk '{printf "%s %s %s\n", $1, $2, $3}' > instance_inventory_ips.txt
 
 
 # Update /etc/hosts
