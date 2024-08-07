@@ -125,6 +125,36 @@
         dest: "../instance-ips.txt"
 
 
+    # - name: Initialize compute_details variable
+    #   set_fact:
+    #     compute_details: []
+
+    # - name: Extract compute instance details
+    #   set_fact:
+    #     compute_details: >-
+    #       {{
+    #         compute_details + [{
+    #           'id': item.instance_ids[0],
+    #           'private_ip': item.instances[0].private_ip_address,
+    #           'hostname': 'compute_' + (loop.index0 + 1 | string)
+    #         }]
+    #       }}
+    #   loop: "{{ compute_instances.results }}"
+    #   when: item.instance_ids is defined and item.instances is defined
+    #   loop_control:
+    #     label: "{{ loop.index0 }}"
+
+    # - name: Debug compute_details
+    #   debug:
+    #     var: compute_details
+
+    # - name: Add instance details to /etc/hosts
+    #   lineinfile:
+    #     path: /etc/hosts
+    #     line: "{{ item.private_ip }} {{ item.hostname }}"
+    #     state: present
+    #   loop: "{{ compute_details }}"
+    #   become: yes
     - name: Initialize compute_details variable
       set_fact:
         compute_details: []
@@ -134,15 +164,15 @@
         compute_details: >-
           {{
             compute_details + [{
-              'id': item.instance_ids[0],
+              'id': item.instances[0].instance_id,
               'private_ip': item.instances[0].private_ip_address,
-              'hostname': 'compute_' + (loop.index0 + 1 | string)
+              'hostname': item.instances[0].tags.Name
             }]
           }}
-      loop: "{{ compute_instances.results }}"
-      when: item.instance_ids is defined and item.instances is defined
+      loop: "{{ ec2_instances.results }}"
+      when: item.instances is defined
       loop_control:
-        label: "{{ loop.index0 }}"
+        label: "{{ item.instances[0].tags.Name }}"
 
     - name: Debug compute_details
       debug:
