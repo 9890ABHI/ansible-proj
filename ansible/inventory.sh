@@ -6,15 +6,17 @@
 
 # read -p "Enter the subnet id :  " subnet_id
 
+# read -p "Enter the compute node number :  " compu_number
 
 # export KEY_NAME=$key_name
 # export IMAGE_NAME=$image_name
 # export SUBNET_NAME=$subnet_id
+# export COMPUTE_NUMBER=$compu_number
 
 export KEY_NAME=boot-1
 export IMAGE_NAME=ami-04a81a99f5ec58529
 export SUBNET_NAME=subnet-0af822569e9483069
-
+export COMPUTE_NUMBER=2
 # echo $key_name
 # echo $image_name
 # echo $subnet_id
@@ -37,7 +39,7 @@ echo "# ==================== "
 
 
 # give the permision to .pem ey
-chmod 0600 ~/.ssh/boot-1.pem
+chmod 0600 ~/.ssh/$key_name.pem
 
 
 # # Write to inventory file
@@ -63,15 +65,15 @@ chmod 0600 ~/.ssh/boot-1.pem
 
 
 # id private_ip public_ip 
-aws ec2 describe-instances \
-    --query "Reservations[*].Instances[*].[InstanceId,PrivateIpAddress,PublicIpAddress]" \
-    --output text | awk '{printf "%s %s %s\n", $1, $2, $3}' > inventory_ips-1.txt
+# aws ec2 describe-instances \
+#     --query "Reservations[*].Instances[*].[InstanceId,PrivateIpAddress,PublicIpAddress]" \
+#     --output text | awk '{printf "%s %s %s\n", $1, $2, $3}' > inventory_ips-1.txt
 
 
-# Update /etc/hosts
-echo "Updating /etc/hosts..."
-# cat private_ips.txt | sudo tee -a /etc/hosts
-cat instance_ips-1.txt 
+# # Update /etc/hosts
+# echo "Updating /etc/hosts..."
+# # cat private_ips.txt | sudo tee -a /etc/hosts
+# cat instance_ips-1.txt 
 
-echo "Update complete!"
+# echo "Update complete!"
 

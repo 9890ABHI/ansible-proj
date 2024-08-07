@@ -8,9 +8,22 @@
     ami_id: "{{ lookup('env', 'IMAGE_NAME') }}"     # Replace with your desired AMI ID
     key_name: "{{ lookup('env', 'KEY_NAME') }}"     # Replace with your AWS key pair name
     subnet_id: "{{ lookup('env', 'SUBNET_NAME') }}" # Replace with your subnet ID
-    
+    num_computes: "{{ lookup('env', 'COMPUTE_NUMBER') }}"
+
 
   tasks:
+    - name: Define instance configurations
+      set_fact:
+        instances:
+          - { name: "master" }
+          - { name: "compute{{ item }}" }
+      loop: "{{ range(1, num_computes + 1) }}"
+      register: compute_instances
+
+    - name: Add master instance to the list
+      set_fact:
+        all_instances: "{{ [{'name': 'master'}] + compute_instances.results | map(attribute='item') | list }}"
+
     - name: Launch EC2 instances
       community.aws.ec2_instance:
         name: "{{ item.name }}"
@@ -21,11 +34,27 @@
         subnet_id: "{{ subnet_id }}"
         wait: yes
         count: 1
-      with_items:
-        - { name: "master", count: 1 }
-        - { name: "compute1", count: 1 }
-        - { name: "compute2", count: 1 }
+        tags:
+          Name: "{{ item.name }}"
+      loop: "{{ all_instances }}"
       register: ec2_instances
+
+  # tasks:
+  #   - name: Launch EC2 instances
+  #     community.aws.ec2_instance:
+  #       name: "{{ item.name }}"
+  #       image_id: "{{ ami_id }}"
+  #       instance_type: "{{ instance_type }}"
+  #       key_name: "{{ key_name }}"
+  #       region: "{{ aws_region }}"
+  #       subnet_id: "{{ subnet_id }}"
+  #       wait: yes
+  #       count: 1
+  #     with_items:
+  #       - { name: "master", count: 1 }
+  #       - { name: "compute1", count: 1 }
+  #       - { name: "compute2", count: 1 }
+  #     register: ec2_instances
 
     # - name: Save instance information to file
     #   ansible.builtin.copy:
