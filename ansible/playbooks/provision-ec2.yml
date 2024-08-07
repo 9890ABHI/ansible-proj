@@ -31,45 +31,6 @@
             {% endfor %}
           ]
 
-    # - name: Define instance configurations
-    #   set_fact:
-    #     compute_instances: "{{ ['compute' ~ item | string for item in range(1, num_computes + 1)] }}"
-    #     all_instances: "{{ [{'name': 'master'}] + [{'name': item} for item in compute_instances] }}"
-    # - name: Define instance configurations
-    #   set_fact:
-    #     all_instances: >
-    #       [
-    #         { "name": "master" } +
-    #         [
-    #           { "name": "compute" + item | string }
-    #           for item in range(1, num_computes + 1)
-    #         ]
-    #       ]
-    # - name: Define instance configurations
-    #   set_fact:
-    #     compute_instances: "{{ [range(1, num_computes + 1) | map('int') | list] }}"
-    
-    # - name: Create a list of instance names
-    #   set_fact:
-    #     all_instances: >
-    #       [
-    #         { "name": "master" } +
-    #         [{ "name": "compute" + item | string } for item in compute_instances]
-    #       ]
-    #   vars:
-    #     compute_instances: "{{ compute_instances | flatten }}"
-
-    # - name: Define instance configurations
-    #   set_fact:
-    #     instances:
-    #       - { name: "master" }
-    #       - { name: "compute{{ item }}" }
-    #   loop: "{{ range(1, num_computes + 1) }}"
-    #   register: compute_instances
-
-    # - name: Add master instance to the list
-    #   set_fact:
-    #     all_instances: "{{ [{'name': 'master'}] + compute_instances.results | map(attribute='item') | list }}"
 
     - name: Launch EC2 instances
       community.aws.ec2_instance:
@@ -87,32 +48,6 @@
       loop: "{{ all_instances }}"
       register: ec2_instances
 
-  # tasks:
-  #   - name: Launch EC2 instances
-  #     community.aws.ec2_instance:
-  #       name: "{{ item.name }}"
-  #       image_id: "{{ ami_id }}"
-  #       instance_type: "{{ instance_type }}"
-  #       key_name: "{{ key_name }}"
-  #       region: "{{ aws_region }}"
-  #       subnet_id: "{{ subnet_id }}"
-  #       wait: yes
-  #       count: 1
-  #     with_items:
-  #       - { name: "master", count: 1 }
-  #       - { name: "compute1", count: 1 }
-  #       - { name: "compute2", count: 1 }
-  #     register: ec2_instances
-
-    # - name: Save instance information to file
-    #   ansible.builtin.copy:
-    #     content: |
-    #       {% for instance in ec2_instances.results %}
-    #         {% for i in range(instance.instances[0].count) %}
-    #           {{ instance.instances[0].tags.Name }} - {{ instance.instances[0].instances[i].private_ip_address }}
-    #         {% endfor %}
-    #       {% endfor %}
-    #     dest: "instance-ips.txt"
 
 
     - name: Save instance information to file
