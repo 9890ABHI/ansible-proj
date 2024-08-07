@@ -12,9 +12,14 @@
 
 
   tasks:
+    - name: Initialize compute_instances list
+      set_fact:
+        compute_instances: []
+
     - name: Define compute instance names
       set_fact:
-        compute_instances: "{{ ['compute' ~ item for item in range(1, num_computes + 1)] }}"
+        compute_instances: "{{ compute_instances + ['compute' ~ item] }}"
+      loop: "{{ range(1, num_computes + 1) }}"
 
     - name: Define all instance names
       set_fact:
