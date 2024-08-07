@@ -8,23 +8,34 @@
     ami_id: "{{ lookup('env', 'IMAGE_NAME') }}"     # Replace with your desired AMI ID
     key_name: "{{ lookup('env', 'KEY_NAME') }}"     # Replace with your AWS key pair name
     subnet_id: "{{ lookup('env', 'SUBNET_NAME') }}" # Replace with your subnet ID
-    num_computes: "{{ lookup('env', 'COMPUTE_NUMBER') }}"
+    num_computes: 2
 
 
   tasks:
     - name: Define instance configurations
       set_fact:
-        compute_instances: "{{ [range(1, num_computes + 1) | map('int') | list] }}"
-    
-    - name: Create a list of instance names
-      set_fact:
         all_instances: >
           [
             { "name": "master" } +
-            [{ "name": "compute" + item | string } for item in compute_instances]
+            [
+              { "name": "compute" + item | string }
+              for item in range(1, num_computes + 1)
+            ]
           ]
-      vars:
-        compute_instances: "{{ compute_instances | flatten }}"
+    # - name: Define instance configurations
+    #   set_fact:
+    #     compute_instances: "{{ [range(1, num_computes + 1) | map('int') | list] }}"
+    
+    # - name: Create a list of instance names
+    #   set_fact:
+    #     all_instances: >
+    #       [
+    #         { "name": "master" } +
+    #         [{ "name": "compute" + item | string } for item in compute_instances]
+    #       ]
+    #   vars:
+    #     compute_instances: "{{ compute_instances | flatten }}"
+
     # - name: Define instance configurations
     #   set_fact:
     #     instances:
