@@ -122,4 +122,4 @@
               {{ inst.tags.Name }} - {{ inst.private_ip_address }}
             {% endfor %}
           {% endfor %}
-        dest: "instance-ips.txt"
+        dest: "../instance-ips.txt"
