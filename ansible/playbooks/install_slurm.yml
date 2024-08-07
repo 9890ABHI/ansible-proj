@@ -1,6 +1,6 @@
 ---
 - name: Install and configure SLURM
-  hosts: compute
+  hosts: all
   become: yes
   tasks:
     - name: Update APT repository
