@@ -14,14 +14,18 @@
   tasks:
     - name: Define instance configurations
       set_fact:
-        all_instances: >
-          [
-            { "name": "master" } +
-            [
-              { "name": "compute" + item | string }
-              for item in range(1, num_computes + 1)
-            ]
-          ]
+        compute_instances: "{{ ['compute' ~ item | string for item in range(1, num_computes + 1)] }}"
+        all_instances: "{{ [{'name': 'master'}] + [{'name': item} for item in compute_instances] }}"
+    # - name: Define instance configurations
+    #   set_fact:
+    #     all_instances: >
+    #       [
+    #         { "name": "master" } +
+    #         [
+    #           { "name": "compute" + item | string }
+    #           for item in range(1, num_computes + 1)
+    #         ]
+    #       ]
     # - name: Define instance configurations
     #   set_fact:
     #     compute_instances: "{{ [range(1, num_computes + 1) | map('int') | list] }}"
