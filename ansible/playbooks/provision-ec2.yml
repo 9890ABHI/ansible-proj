@@ -5,11 +5,10 @@
   vars:
     aws_region: "us-east-1"
     instance_type: "t2.micro"
-    ami_id: "{{ lookup('env', 'IMAGE_NAME') }}"     # Replace with your desired AMI ID
-    key_name: "{{ lookup('env', 'KEY_NAME') }}"     # Replace with your AWS key pair name
+    ami_id: "{{ lookup('env', 'IMAGE_NAME') }}" # Replace with your desired AMI ID
+    key_name: "{{ lookup('env', 'KEY_NAME') }}" # Replace with your AWS key pair name
     subnet_id: "{{ lookup('env', 'SUBNET_NAME') }}" # Replace with your subnet ID
     num_computes: 2
-
 
   tasks:
     - name: Initialize compute_instances list
@@ -31,7 +30,6 @@
             {% endfor %}
           ]
 
-
     - name: Launch EC2 instances
       community.aws.ec2_instance:
         name: "{{ item.name }}"
@@ -48,8 +46,6 @@
       loop: "{{ all_instances }}"
       register: ec2_instances
 
-
-
     - name: Save instance information to file
       ansible.builtin.copy:
         content: |
@@ -60,9 +56,7 @@
           {% endfor %}
         dest: "../instance-ips.txt"
 
-
     # add ip into /etc/hosts
-
 
     - name: Initialize compute_details variable
       set_fact:
@@ -94,3 +88,15 @@
         state: present
       loop: "{{ compute_details }}"
       become: yes
+
+    - name: Install SLURM
+      import_playbook: ./install_slurm.yml
+      when: "'slurm' in application_choice"
+
+    - name: Install Hadoop
+      import_playbook: install_hadoop.yml
+      when: "'hadoop' in application_choice"
+
+    - name: Install Nagios
+      import_playbook: install_nagios.yml
+      when: "'nagios' in application_choice"
