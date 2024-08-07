@@ -61,6 +61,15 @@
       loop: "{{ compute_instances.results }}"
       when: item.instance_ids is defined and item.instances is defined
 
+    - name: Extract compute instance details
+          set_fact:
+            compute_details: "{{ compute_details | default([]) + [{'id': item.instance_ids[0], 'private_ip': item.instances[0].private_ip_address, 'hostname': 'compute_' + (loop.index0 + 1)|string }] }}"
+          loop: "{{ compute_instances.results }}"
+          when: item.instance_ids is defined and item.instances is defined
+          loop_control:
+            index_var: loop_index
+
+
     - name: Combine all instance details
       set_fact:
         all_instance_details: "{{ [master_details] + compute_details }}"
