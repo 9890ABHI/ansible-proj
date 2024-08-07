@@ -14,15 +14,28 @@
   tasks:
     - name: Define instance configurations
       set_fact:
-        instances:
-          - { name: "master" }
-          - { name: "compute{{ item }}" }
-      loop: "{{ range(1, num_computes + 1) }}"
-      register: compute_instances
-
-    - name: Add master instance to the list
+        compute_instances: "{{ [range(1, num_computes + 1) | map('int') | list] }}"
+    
+    - name: Create a list of instance names
       set_fact:
-        all_instances: "{{ [{'name': 'master'}] + compute_instances.results | map(attribute='item') | list }}"
+        all_instances: >
+          [
+            { "name": "master" } +
+            [{ "name": "compute" + item | string } for item in compute_instances]
+          ]
+      vars:
+        compute_instances: "{{ compute_instances | flatten }}"
+    # - name: Define instance configurations
+    #   set_fact:
+    #     instances:
+    #       - { name: "master" }
+    #       - { name: "compute{{ item }}" }
+    #   loop: "{{ range(1, num_computes + 1) }}"
+    #   register: compute_instances
+
+    # - name: Add master instance to the list
+    #   set_fact:
+    #     all_instances: "{{ [{'name': 'master'}] + compute_instances.results | map(attribute='item') | list }}"
 
     - name: Launch EC2 instances
       community.aws.ec2_instance:
