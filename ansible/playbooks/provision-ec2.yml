@@ -27,12 +27,23 @@
         - { name: "compute2", count: 1 }
       register: ec2_instances
 
+    # - name: Save instance information to file
+    #   ansible.builtin.copy:
+    #     content: |
+    #       {% for instance in ec2_instances.results %}
+    #         {% for i in range(instance.instances[0].count) %}
+    #           {{ instance.instances[0].tags.Name }} - {{ instance.instances[0].instances[i].private_ip_address }}
+    #         {% endfor %}
+    #       {% endfor %}
+    #     dest: "instance-ips.txt"
+
+
     - name: Save instance information to file
       ansible.builtin.copy:
         content: |
           {% for instance in ec2_instances.results %}
-            {% for i in range(instance.instances[0].count) %}
-              {{ instance.instances[0].tags.Name }} - {{ instance.instances[0].instances[i].private_ip_address }}
+            {% for inst in instance.instances %}
+              {{ inst.tags.Name }} - {{ inst.private_ip_address }}
             {% endfor %}
           {% endfor %}
         dest: "instance-ips.txt"
