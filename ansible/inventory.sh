@@ -24,56 +24,32 @@ export COMPUTE_NUMBER=2
 # Run the provisioning playbook and capture output
 ansible-playbook playbooks/provision-ec2.yml | tee provision-output.txt
 
-echo "# ==================== "
-echo ""
-if echo $? == 0;
-then
-  echo "Instances Created successfully" 
-fi
-echo "# ==================== "
 
 
-# # Extract IPs from the output
-# master_ip=$(grep 'Public IP: ' provision-output.txt | grep 'master' | awk '{print $NF}')
-# compute_ips=$(grep 'Public IPs: ' provision-output.txt | awk '{print $NF}' | tr -d '[],')
+# add ip to /etc/hosts file
+INSTANCE_IPS_FILE="instance-ips.txt"
 
+# Backup the current /etc/hosts file
+cp /etc/hosts /etc/hosts.bak
 
-# give the permision to .pem ey
-# chmod 0600 ~/.ssh/$key_name.pem
+# Add entries from the file to /etc/hosts
+while IFS= read -r line; do
+  # Skip empty lines and lines that start with a comment
+  [[ -z "$line" || "$line" =~ ^# ]] && continue
 
+  # Extract the IP address and hostname from the line
+  ip=$(echo "$line" | awk '{print $NF}')
+  hostname=$(echo "$line" | awk '{print $1}')
 
-# # Write to inventory file
-# cat <<EOL > inventory.ini
-# [master]
-# $master_ip ansible_ssh_user=ubuntu
+  # Check if the line format is correct
+  if [[ -n "$ip" && -n "$hostname" ]]; then
+    # Append the IP address and hostname to /etc/hosts
+    grep -q "^$ip" /etc/hosts || echo "$ip $hostname" >> /etc/hosts
+  else
+    echo "Skipping invalid line: $line"
+  fi
+done < "$INSTANCE_IPS_FILE"
 
-# [compute]
-# $compute_ips ansible_ssh_user=ubuntu
-
-# [all:vars]
-# ansible_ssh_private_key_file=~/.ssh/boot-1.pem
-# EOL
-
-
-
-# Get private IPs
-# id private_ip 
-
-# aws ec2 describe-instances \
-#     --query "Reservations[*].Instances[*].[InstanceId,PrivateIpAddress]" \
-#     --output text > private_ips.txt
-
-
-# id private_ip public_ip 
-# aws ec2 describe-instances \
-#     --query "Reservations[*].Instances[*].[InstanceId,PrivateIpAddress,PublicIpAddress]" \
-#     --output text | awk '{printf "%s %s %s\n", $1, $2, $3}' > inventory_ips-1.txt
-
-
-# # Update /etc/hosts
-# echo "Updating /etc/hosts..."
-# # cat private_ips.txt | sudo tee -a /etc/hosts
-# cat instance_ips-1.txt 
-
-# echo "Update complete!"
+echo "Update complete. Current /etc/hosts contents:"
+cat /etc/hosts
 
