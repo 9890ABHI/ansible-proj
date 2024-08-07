@@ -39,7 +39,7 @@ echo "# ==================== "
 
 
 # give the permision to .pem ey
-chmod 0600 ~/.ssh/$key_name.pem
+# chmod 0600 ~/.ssh/$key_name.pem
 
 
 # # Write to inventory file
