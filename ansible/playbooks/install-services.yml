@@ -9,7 +9,7 @@
 
   tasks:
     - name: Install SLURM
-      import_playbook: install_slurm.yml
+      import_playbook: ./install_slurm.yml
       when: "'slurm' in application_choice"
 
     - name: Install Hadoop
