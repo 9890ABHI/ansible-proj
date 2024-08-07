@@ -28,10 +28,10 @@ ansible-playbook playbooks/provision-ec2.yml | tee provision-output.txt
 echo "successfully created Ec2 Instances"
 
 
-echo "get IP and hostname Ec2 Instances"
-# Run the extract ip and hostname playbook and capture output
-ansible-playbook playbooks/Extract_details_instances.yml | tee Extract_details.txt
-echo "successfully get IP and hostname Ec2 Instances"
+# echo "get IP and hostname Ec2 Instances"
+# # Run the extract ip and hostname playbook and capture output
+# ansible-playbook playbooks/Extract_details_instances.yml | tee Extract_details.txt
+# echo "successfully get IP and hostname Ec2 Instances"
 
 
 # # add ip to /etc/hosts file
