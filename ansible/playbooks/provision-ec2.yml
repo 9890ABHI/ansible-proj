@@ -8,7 +8,7 @@
     ami_id: "{{ lookup('env', 'IMAGE_NAME') }}"     # Replace with your desired AMI ID
     key_name: "{{ lookup('env', 'KEY_NAME') }}"     # Replace with your AWS key pair name
     subnet_id: "{{ lookup('env', 'SUBNET_NAME') }}" # Replace with your subnet ID
-    num_computes: "{{ lookup('env', 'COMPUTE_NUMBER') }}"
+    num_computes: 2
 
 
   tasks:
