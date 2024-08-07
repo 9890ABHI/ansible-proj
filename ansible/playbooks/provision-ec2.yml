@@ -79,6 +79,7 @@
         key_name: "{{ key_name }}"
         region: "{{ aws_region }}"
         subnet_id: "{{ subnet_id }}"
+        security_groups: launch-wizard-11
         wait: yes
         count: 1
         tags:
