@@ -9,13 +9,13 @@
 
   tasks:
     - name: Install SLURM
-      include_playbook: install_slurm.yml
+      import_playbook: install_slurm.yml
       when: "'slurm' in application_choice"
 
     - name: Install Hadoop
-      include_playbook: install_hadoop.yml
+      import_playbook: install_hadoop.yml
       when: "'hadoop' in application_choice"
 
     - name: Install Nagios
-      include_playbook: install_nagios.yml
+      import_playbook: install_nagios.yml
       when: "'nagios' in application_choice"
