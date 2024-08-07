@@ -1,0 +1,38 @@
+---
+- name: Install and configure Nagios
+  hosts: all
+  become: yes
+  tasks:
+    - name: Update APT repository
+      apt:
+        update_cache: yes
+
+    - name: Install Nagios and plugins
+      apt:
+        name:
+          - nagios3
+          - nagios-nrpe-server
+          - nagios-plugins
+        state: present
+
+    - name: Configure Nagios
+      template:
+        src: config/nagios/nagios.cfg.j2
+        dest: /etc/nagios3/nagios.cfg
+
+    - name: Start Nagios service
+      service:
+        name: nagios3
+        state: started
+        enabled: yes
+
+    - name: Configure NRPE
+      template:
+        src: config/nagios/nrpe.cfg.j2
+        dest: /etc/nagios/nrpe.cfg
+
+    - name: Start NRPE service
+      service:
+        name: nagios-nrpe-server
+        state: started
+        enabled: yes

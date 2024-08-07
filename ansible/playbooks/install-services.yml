@@ -1,0 +1,21 @@
+---
+- name: Install Applications Based on User Input
+  hosts: localhost
+  gather_facts: no
+  vars_prompt:
+    - name: "application_choice"
+      prompt: "Which applications would you like to install? (e.g., slurm, hadoop, nagios)"
+      private: no
+
+  tasks:
+    - name: Install SLURM
+      include_playbook: install_slurm.yml
+      when: "'slurm' in application_choice"
+
+    - name: Install Hadoop
+      include_playbook: install_hadoop.yml
+      when: "'hadoop' in application_choice"
+
+    - name: Install Nagios
+      include_playbook: install_nagios.yml
+      when: "'nagios' in application_choice"

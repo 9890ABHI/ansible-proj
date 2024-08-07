@@ -1,0 +1,7 @@
+# NRPE Configuration File
+
+server_address=0.0.0.0
+allowed_hosts=127.0.0.1,{{ ansible_host }}
+log_file=/var/log/nagios/nrpe.log
+pid_file=/var/run/nagios/nrpe.pid
+include=/etc/nagios/nrpe.cfg

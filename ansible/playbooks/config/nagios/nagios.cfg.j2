@@ -1,0 +1,11 @@
+# Nagios Core Configuration File
+
+log_file=/var/log/nagios3/nagios.log
+log_retention=30d
+status_file=/var/cache/nagios3/status.dat
+status_update_interval=10
+check_external_commands=1
+external_command_buffer_slots=32768
+resource_file=/etc/nagios3/resource.cfg
+cfg_dir=/etc/nagios3/conf.d
+cfg_dir=/etc/nagios3/objects

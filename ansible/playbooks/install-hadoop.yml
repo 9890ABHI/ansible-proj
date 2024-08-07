@@ -1,0 +1,56 @@
+---
+- name: Install and configure Hadoop
+  hosts: all
+  become: yes
+  tasks:
+    - name: Update APT repository
+      apt:
+        update_cache: yes
+
+    - name: Install Hadoop packages
+      apt:
+        name:
+          - hadoop
+          - hadoop-hdfs
+          - hadoop-yarn
+          - hadoop-mapreduce
+        state: present
+
+    - name: Configure Hadoop
+      template:
+        src: config/hadoop/core-site.xml.j2
+        dest: /etc/hadoop/conf/core-site.xml
+
+    - name: Configure Hadoop HDFS
+      template:
+        src: config/hadoop/hdfs-site.xml.j2
+        dest: /etc/hadoop/conf/hdfs-site.xml
+
+    - name: Configure Hadoop YARN
+      template:
+        src: config/hadoop/yarn-site.xml.j2
+        dest: /etc/hadoop/conf/yarn-site.xml
+
+    - name: Start Hadoop services
+      service:
+        name: hadoop-hdfs-namenode
+        state: started
+        enabled: yes
+
+    - name: Start Hadoop DataNode
+      service:
+        name: hadoop-hdfs-datanode
+        state: started
+        enabled: yes
+
+    - name: Start YARN ResourceManager
+      service:
+        name: hadoop-yarn-resourcemanager
+        state: started
+        enabled: yes
+
+    - name: Start YARN NodeManager
+      service:
+        name: hadoop-yarn-nodemanager
+        state: started
+        enabled: yes

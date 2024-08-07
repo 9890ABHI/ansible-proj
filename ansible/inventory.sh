@@ -61,3 +61,4 @@ echo "successfully created Ec2 Instances"
 # echo "Update complete. Current /etc/hosts contents:"
 # cat /etc/hosts
 
+ansible-playbook playbooks/main_playbook.yml

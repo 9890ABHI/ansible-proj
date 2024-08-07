@@ -1,0 +1,34 @@
+---
+- name: Install and configure SLURM
+  hosts: compute
+  become: yes
+  tasks:
+    - name: Update APT repository
+      apt:
+        update_cache: yes
+
+    - name: Install SLURM packages
+      apt:
+        name:
+          - slurm-wlm
+          - slurm-wlm-basic-plugins
+        state: present
+
+    - name: Configure SLURM
+      template:
+        src: config/slurm/slurm.conf.j2
+        dest: /etc/slurm-llnl/slurm.conf
+
+    - name: Start SLURM service
+      service:
+        name: slurmctld
+        state: started
+        enabled: yes
+
+    - name: Start SLURM service on compute nodes
+      service:
+        name: slurmd
+        state: started
+        enabled: yes
+      delegate_to: "{{ item }}"
+      with_items: "{{ groups['compute'] }}"
