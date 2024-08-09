@@ -42,13 +42,12 @@
         msg: "{{ ssh_test.results }}"
 
     - name: Install Slurm on compute nodes
-      ansible.builtin.yum:
+      apt:
         name:
           - slurm
           - slurm-slurmd
           - slurm-slurmctld
         state: present
-        use_backend: dnf
       become: yes
       delegate_to: "{{ item }}"
       loop: "{{ inventory }}"
@@ -59,7 +58,7 @@
     - name: Copy Slurm configuration files to compute nodes
       ansible.builtin.copy:
         src: "slurm/slurm.conf.j2"
-        dest: "/etc/slurm/slurm.conf"
+        dest: "/etc/slurm-llnl/slurm.conf"
         owner: root
         group: root
         mode: '0644'
