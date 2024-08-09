@@ -26,11 +26,6 @@ chmod -R +x ansible-proj
 
 ```
 
-then give permission 
-
-```bash
-chmod +x ansible 
-```
 
 then copy your .pem key and paste in .ssh dir
 
@@ -40,3 +35,28 @@ nano boot-1.pem
 chmod 0600 boot-1.pem
 
 ```
+
+
+export you your key 
+go to IAM in AWS 
+create user 
+give the full permission of EC2 
+
+
+```bash
+
+export AWS_ACCESS_KEY_ID='your-access-key-id'
+export AWS_SECRET_ACCESS_KEY='your-secret-access-key'
+
+```
+
+
+
+then run 
+```bash
+
+./inventory.sh
+
+```
+
+
