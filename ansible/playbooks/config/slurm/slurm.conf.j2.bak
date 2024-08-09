@@ -21,3 +21,5 @@ AuthType=auth/munge
 # Define the partitions
 PartitionName=debug Nodes=ALL Default=YES MaxTime=INFINITE State=UP
 
+# Define the nodes
+NodeName={{ ansible_hostname }} NodeAddr={{ ansible_default_ipv4.address }} CPUs=2 State=UNKNOWN

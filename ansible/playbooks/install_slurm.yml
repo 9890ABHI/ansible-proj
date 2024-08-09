@@ -44,8 +44,10 @@
 
 
 # -------------------------------------------------------------------------------
-
-
+- name: Install and Configure Slurm
+  hosts: all
+  become: yes
+  tasks:
     - name: Install dependencies
       apt:
         name:
@@ -95,26 +97,48 @@
         owner: root
         group: root
         mode: '0644'
+      when: ansible_hostname == 'master'
+      vars:
+        master_ip: "{{ master_ip }}"
 
     - name: Create Slurm systemd service files
       template:
         src: "config/slurm/slurmctld.service.j2"
         dest: "/etc/systemd/system/slurmctld.service"
+      when: ansible_hostname == 'master' 
 
     - name: Create slurmd.service file
       template:
         src: "config/slurm/slurmd.service.j2"
         dest: "/etc/systemd/system/slurmd.service"
+      when: ansible_hostname != 'master'
+    
+    # - name: Enable and start Slurm services
+    #   systemd:
+    #     name: "{{ item }}"
+    #     state: started
+    #     enabled: yes
+    #   loop:
+    #     - slurmctld
+    #     - slurmd
 
-    - name: Enable and start Slurm services
+    - name: Enable and start Slurm services on master node
       systemd:
         name: "{{ item }}"
         state: started
         enabled: yes
       loop:
         - slurmctld
-        - slurmd
+      when: ansible_hostname == 'master'  # or use another condition to identify the master node
 
+    - name: Enable and start Slurm services on compute nodes
+      systemd:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - slurmd
+      when: ansible_hostname != 'master'  # or use another condition to identify compute nodes
 
 
 # -------------------------------------------------------------------------------
