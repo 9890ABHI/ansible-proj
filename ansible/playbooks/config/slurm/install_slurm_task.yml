@@ -1,0 +1,63 @@
+---
+- name: Install and Configure Slurm
+  hosts: "{{ inventory }}"
+  become: yes
+  gather_facts: yes
+  tasks:
+    - name: Update APT repository and install dependencies
+      apt:
+        update_cache: yes
+        name:
+          - wget
+          - build-essential
+          - libmunge-dev
+          - libssl-dev
+        state: present
+
+    - name: Download and install Slurm
+      shell: |
+        wget https://download.schedmd.com/slurm/slurm-20.11.8.tar.bz2
+        tar xjf slurm-20.11.8.tar.bz2
+        cd slurm-20.11.8
+        ./configure
+        make
+        make install
+
+    - name: Configure Slurm
+      copy:
+        content: |
+          # Example slurm.conf configuration
+          ClusterName=slurm-cluster
+          SlurmdPort=7003
+          SlurmctldPort=7002
+          SlurmdPort=7003
+          SlurmctldPort=7002
+          SlurmdPidFile=/var/run/slurm/slurmd.pid
+          SlurmctldPidFile=/var/run/slurm/slurmctld.pid
+          SlurmdSocketDir=/var/run/slurm
+          SlurmctldSocketDir=/var/run/slurm
+          StateSaveLocation=/var/spool/slurmctld
+          SlurmdLogFile=/var/log/slurm/slurmd.log
+          SlurmctldLogFile=/var/log/slurm/slurmctld.log
+          # Adjust the following settings as needed
+          SlurmdUser=root
+          SlurmctldUser=root
+          SlurmdPort=7003
+          SlurmctldPort=7002
+        dest: /etc/slurm/slurm.conf
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Start and enable Slurm services
+      systemd:
+        name: slurmd
+        state: started
+        enabled: yes
+
+    - name: Ensure slurmctld is started on the master node
+      systemd:
+        name: slurmctld
+        state: started
+        enabled: yes
+      when: inventory_hostname == 'master'

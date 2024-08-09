@@ -90,6 +90,11 @@
       become: yes
       delegate_to: localhost
 
+    - name: Save compute details to a JSON file
+      copy:
+        content: "{{ compute_details | to_nice_json }}"
+        dest: "../compute_details.json"
+
     # - name: Install SLURM
     #   import_playbook: ./install_slurm.yml
     #   when: "'slurm' in application_choice"
