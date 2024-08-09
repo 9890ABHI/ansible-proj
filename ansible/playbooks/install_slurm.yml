@@ -45,27 +45,24 @@
 
 # -------------------------------------------------------------------------------
 
-    - name: Install and Configure Slurm on Compute Nodes
-      hosts: all
-      become: yes
-      tasks:
-        - name: Install dependencies
-          apt:
-            name:
-              - build-essential
-              - libtool
-              - autoconf
-              - automake
-              - bison
-              - flex
-              - libmunge-dev
-              - libpam0g-dev
-              - libssl-dev
-              - libmysqlclient-dev
-              - libmariadbclient-dev
-              - libsqlite3-dev
-              - pkg-config
-            state: present
+
+    - name: Install dependencies
+      apt:
+        name:
+          - build-essential
+          - libtool
+          - autoconf
+          - automake
+          - bison
+          - flex
+          - libmunge-dev
+          - libpam0g-dev
+          - libssl-dev
+          - libmysqlclient-dev
+          - libmariadbclient-dev
+          - libsqlite3-dev
+          - pkg-config
+        state: present
 
     - name: Download Slurm source
       get_url:
