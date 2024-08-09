@@ -12,6 +12,14 @@
     - name: Set up dynamic inventory
       set_fact:
         inventory: "{{ compute_details | map(attribute='hostname') | list }}"
+
+
+    - name: Remove old SSH host keys
+      command: ssh-keygen -f '/root/.ssh/known_hosts' -R "{{ item }}"
+      loop: "{{ inventory }}"
+      ignore_errors: yes
+      delegate_to: localhost
+
     # install 
     - name: Ensure all instances are reachable
       wait_for:
@@ -21,6 +29,17 @@
         delay: 10
       loop: "{{ inventory }}"
       delegate_to: localhost
+    
+    - name: Test SSH connectivity
+      command: ssh -o StrictHostKeyChecking=no -i /root/.ssh/boot-1.pem ec2-user@{{ item }} echo "Connected"
+      register: ssh_test
+      ignore_errors: yes
+      loop: "{{ inventory }}"
+      delegate_to: localhost
+
+    - name: Print SSH connectivity results
+      debug:
+        msg: "{{ ssh_test.results }}"
 
     - name: Install Slurm on compute nodes
       ansible.builtin.yum:
@@ -32,6 +51,8 @@
       become: yes
       delegate_to: "{{ item }}"
       loop: "{{ inventory }}"
+      vars:
+        ansible_ssh_private_key_file: /root/.ssh/boot-1.pem
 
     - name: Copy Slurm configuration files to compute nodes
       ansible.builtin.copy:
@@ -43,6 +64,9 @@
       become: yes
       delegate_to: "{{ item }}"
       loop: "{{ inventory }}"
+      vars:
+        ansible_ssh_private_key_file: /root/.ssh/boot-1.pem
+
 
     - name: Start and enable Slurm services on compute nodes
       ansible.builtin.systemd:
@@ -55,6 +79,9 @@
         - slurmctld
         - slurmd
       when: inventory | length > 0
+      vars:
+        ansible_ssh_private_key_file: /root/.ssh/boot-1.pem
+
 
     - name: Debug
       debug:
