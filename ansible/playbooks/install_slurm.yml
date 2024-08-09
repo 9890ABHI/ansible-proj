@@ -44,9 +44,9 @@
     - name: Install Slurm on compute nodes
       apt:
         name:
-          - slurm
-          - slurm-slurmd
-          - slurm-slurmctld
+          - slurm-wlm
+          - slurm-wlm-doc
+          - slurm-wlm-basic-plugins
         state: present
       become: yes
       delegate_to: "{{ item }}"
