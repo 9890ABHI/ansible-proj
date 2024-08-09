@@ -106,3 +106,12 @@
     # - name: Install Nagios
     #   import_playbook: install_nagios.yml
     #   when: "'nagios' in application_choice"
+    
+    - name: Distribute /etc/hosts to all nodes
+      delegate_to: localhost
+      copy:
+        src: "../shared_hosts_file"
+        dest: "/etc/hosts"
+      loop: "{{ compute_details | map(attribute='private_ip') | list }}"
+      delegate_to: "{{ item }}"
+      become: yes

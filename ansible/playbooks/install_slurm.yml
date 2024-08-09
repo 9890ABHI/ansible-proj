@@ -12,11 +12,50 @@
     - name: Set up dynamic inventory
       set_fact:
         inventory: "{{ compute_details | map(attribute='hostname') | list }}"
+    # install 
+    - name: Ensure all instances are reachable
+      wait_for:
+        host: "{{ item }}"
+        port: 22
+        state: started
+        delay: 10
+      loop: "{{ inventory }}"
+      delegate_to: localhost
 
-    - name: Copy /etc/hosts file to all nodes
-      copy:
-        src: "../shared_hosts_file"
-        dest: "/etc/hosts"
+    - name: Install Slurm on compute nodes
+      ansible.builtin.yum:
+        name:
+          - slurm
+          - slurm-slurmd
+          - slurm-slurmctld
+        state: present
       become: yes
       delegate_to: "{{ item }}"
       loop: "{{ inventory }}"
+
+    - name: Copy Slurm configuration files to compute nodes
+      ansible.builtin.copy:
+        src: "slurm/slurm.conf.j2"
+        dest: "/etc/slurm/slurm.conf"
+        owner: root
+        group: root
+        mode: '0644'
+      become: yes
+      delegate_to: "{{ item }}"
+      loop: "{{ inventory }}"
+
+    - name: Start and enable Slurm services on compute nodes
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      become: yes
+      delegate_to: "{{ item }}"
+      loop:
+        - slurmctld
+        - slurmd
+      when: inventory | length > 0
+
+    - name: Debug
+      debug:
+        msg: "Slurm installation and configuration completed on all nodes."
