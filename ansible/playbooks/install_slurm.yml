@@ -58,7 +58,6 @@
           - libmunge-dev
           - libpam0g-dev
           - libssl-dev
-          - libmysqlclient-dev
           - libmariadb-dev
           - libsqlite3-dev
           - pkg-config
