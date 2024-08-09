@@ -90,7 +90,7 @@
 
     - name: Copy Slurm configuration file
       copy:
-        src: "./files/slurm.conf"
+        src: "config/slurm/slurm.conf.j2"
         dest: "/etc/slurm-llnl/slurm.conf"
         owner: root
         group: root
