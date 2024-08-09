@@ -54,7 +54,7 @@ export AWS_SECRET_ACCESS_KEY='your-secret-access-key'
 
 then run 
 ```bash
-
+cd ansible-proj/ansible/
 ./inventory.sh
 
 ```
