@@ -31,7 +31,7 @@
       delegate_to: localhost
     
     - name: Test SSH connectivity
-      command: ssh -o StrictHostKeyChecking=no -i /root/.ssh/boot-1.pem ec2-user@{{ item }} echo "Connected"
+      command: ssh -o StrictHostKeyChecking=no -i /root/.ssh/boot-1.pem ubuntu@{{ item }} echo "Connected"
       register: ssh_test
       ignore_errors: yes
       loop: "{{ inventory }}"
@@ -52,6 +52,7 @@
       delegate_to: "{{ item }}"
       loop: "{{ inventory }}"
       vars:
+        ansible_ssh_user: ubuntu
         ansible_ssh_private_key_file: /root/.ssh/boot-1.pem
 
     - name: Copy Slurm configuration files to compute nodes
@@ -65,6 +66,7 @@
       delegate_to: "{{ item }}"
       loop: "{{ inventory }}"
       vars:
+        ansible_ssh_user: ubuntu
         ansible_ssh_private_key_file: /root/.ssh/boot-1.pem
 
 
@@ -80,6 +82,7 @@
         - slurmd
       when: inventory | length > 0
       vars:
+        ansible_ssh_user: ubuntu
         ansible_ssh_private_key_file: /root/.ssh/boot-1.pem
 
 
