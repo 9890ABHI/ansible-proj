@@ -88,15 +88,16 @@
         state: present
       loop: "{{ compute_details }}"
       become: yes
+      delegate_to: localhost
 
-    - name: Install SLURM
-      import_playbook: ./install_slurm.yml
-      when: "'slurm' in application_choice"
+    # - name: Install SLURM
+    #   import_playbook: ./install_slurm.yml
+    #   when: "'slurm' in application_choice"
 
-    - name: Install Hadoop
-      import_playbook: install_hadoop.yml
-      when: "'hadoop' in application_choice"
+    # - name: Install Hadoop
+    #   import_playbook: install_hadoop.yml
+    #   when: "'hadoop' in application_choice"
 
-    - name: Install Nagios
-      import_playbook: install_nagios.yml
-      when: "'nagios' in application_choice"
+    # - name: Install Nagios
+    #   import_playbook: install_nagios.yml
+    #   when: "'nagios' in application_choice"
