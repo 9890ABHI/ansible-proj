@@ -1,0 +1,13 @@
+[Unit]
+Description=Slurm Controller Daemon
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/slurm/sbin/slurmctld
+Restart=on-failure
+User=slurm
+Group=slurm
+
+[Install]
+WantedBy=multi-user.target
