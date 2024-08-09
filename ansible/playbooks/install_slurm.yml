@@ -59,7 +59,7 @@
           - libpam0g-dev
           - libssl-dev
           - libmysqlclient-dev
-          - libmariadbclient-dev
+          - libmariadb-dev
           - libsqlite3-dev
           - pkg-config
         state: present
