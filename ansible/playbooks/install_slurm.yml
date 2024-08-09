@@ -97,7 +97,7 @@
         owner: root
         group: root
         mode: '0644'
-      when: ansible_hostname == 'master'
+      # when: ansible_hostname == 'master'
       vars:
         master_ip: "{{ master_ip }}"
 
