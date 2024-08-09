@@ -41,49 +41,132 @@
       debug:
         msg: "{{ ssh_test.results }}"
 
-    - name: Install Slurm on compute nodes
-      apt:
-        name:
-          - slurm-wlm
-          - slurm-wlm-doc
-          - slurm-wlm-basic-plugins
-        state: present
-      become: yes
-      delegate_to: "{{ item }}"
-      loop: "{{ inventory }}"
-      vars:
-        ansible_ssh_user: ubuntu
-        ansible_ssh_private_key_file: /root/.ssh/boot-1.pem
 
-    - name: Copy Slurm configuration files to compute nodes
-      ansible.builtin.copy:
-        src: "slurm/slurm.conf.j2"
+
+# -------------------------------------------------------------------------------
+
+    - name: Install and Configure Slurm on Compute Nodes
+      hosts: all
+      become: yes
+      tasks:
+        - name: Install dependencies
+          apt:
+            name:
+              - build-essential
+              - libtool
+              - autoconf
+              - automake
+              - bison
+              - flex
+              - libmunge-dev
+              - libpam0g-dev
+              - libssl-dev
+              - libmysqlclient-dev
+              - libmariadbclient-dev
+              - libsqlite3-dev
+              - pkg-config
+            state: present
+
+    - name: Download Slurm source
+      get_url:
+        url: "https://download.schedmd.com/slurm/slurm-22.05.5.tar.bz2"
+        dest: "/tmp/slurm-22.05.5.tar.bz2"
+
+    - name: Extract Slurm source
+      unarchive:
+        src: "/tmp/slurm-22.05.5.tar.bz2"
+        dest: "/tmp/"
+        remote_src: yes
+
+    - name: Build and install Slurm
+      shell: |
+        cd /tmp/slurm-22.05.5
+        ./configure --prefix=/usr/local/slurm
+        make
+        make install
+      args:
+        chdir: /tmp/slurm-22.05.5
+
+    - name: Create Slurm configuration directory
+      file:
+        path: "/etc/slurm-llnl"
+        state: directory
+
+    - name: Copy Slurm configuration file
+      copy:
+        src: "./files/slurm.conf"
         dest: "/etc/slurm-llnl/slurm.conf"
         owner: root
         group: root
         mode: '0644'
-      become: yes
-      delegate_to: "{{ item }}"
-      loop: "{{ inventory }}"
-      vars:
-        ansible_ssh_user: ubuntu
-        ansible_ssh_private_key_file: /root/.ssh/boot-1.pem
 
+    - name: Create Slurm systemd service files
+      template:
+        src: "slurmctld.service.j2"
+        dest: "/etc/systemd/system/slurmctld.service"
 
-    - name: Start and enable Slurm services on compute nodes
-      ansible.builtin.systemd:
+    - name: Create slurmd.service file
+      template:
+        src: "slurmd.service.j2"
+        dest: "/etc/systemd/system/slurmd.service"
+
+    - name: Enable and start Slurm services
+      systemd:
         name: "{{ item }}"
         state: started
         enabled: yes
-      become: yes
-      delegate_to: "{{ item }}"
       loop:
         - slurmctld
         - slurmd
-      when: inventory | length > 0
-      vars:
-        ansible_ssh_user: ubuntu
-        ansible_ssh_private_key_file: /root/.ssh/boot-1.pem
+
+
+
+# -------------------------------------------------------------------------------
+
+
+    # - name: Install Slurm on compute nodes
+    #   apt:
+    #     name:
+    #       - slurm-wlm
+    #       - slurm-wlm-doc
+    #       - slurm-wlm-basic-plugins
+    #     state: present
+    #   become: yes
+    #   delegate_to: "{{ item }}"
+    #   loop: "{{ inventory }}"
+    #   vars:
+    #     ansible_ssh_user: ubuntu
+    #     ansible_ssh_private_key_file: /root/.ssh/boot-1.pem
+
+    # - name: Copy Slurm configuration files to compute nodes
+    #   ansible.builtin.copy:
+    #     src: "slurm/slurm.conf.j2"
+    #     dest: "/etc/slurm-llnl/slurm.conf"
+    #     owner: root
+    #     group: root
+    #     mode: '0644'
+    #   become: yes
+    #   delegate_to: "{{ item }}"
+    #   loop: "{{ inventory }}"
+    #   vars:
+    #     ansible_ssh_user: ubuntu
+    #     ansible_ssh_private_key_file: /root/.ssh/boot-1.pem
+
+
+    # - name: Start and enable Slurm services on compute nodes
+    #   ansible.builtin.systemd:
+    #     name: "{{ item }}"
+    #     state: started
+    #     enabled: yes
+    #   become: yes
+    #   delegate_to: "{{ item }}"
+    #   loop:
+    #     - slurmctld
+    #     - slurmd
+    #   when: inventory | length > 0
+    #   vars:
+    #     ansible_ssh_user: ubuntu
+    #     ansible_ssh_private_key_file: /root/.ssh/boot-1.pem
 
 
     - name: Debug
