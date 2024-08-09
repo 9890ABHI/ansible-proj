@@ -48,6 +48,7 @@
           - slurm-slurmd
           - slurm-slurmctld
         state: present
+        use_backend: dnf
       become: yes
       delegate_to: "{{ item }}"
       loop: "{{ inventory }}"
