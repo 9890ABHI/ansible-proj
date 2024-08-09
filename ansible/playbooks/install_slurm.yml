@@ -5,12 +5,18 @@
   vars_files:
     - "../compute_details.json"
   tasks:
+    - name: Load compute details
+      set_fact:
+        compute_details: "{{ lookup('file', '../compute_details.json') | from_json }}"
+
     - name: Set up dynamic inventory
       set_fact:
         inventory: "{{ compute_details | map(attribute='hostname') | list }}"
 
-    - name: Install and Configure Slurm on the instances
-      ansible.builtin.include_tasks:
-        file: playbook/install_slurm_tasks.yml
-      vars:
-        inventory: "{{ inventory }}"
+    - name: Copy /etc/hosts file to all nodes
+      copy:
+        src: "../shared_hosts_file"
+        dest: "/etc/hosts"
+      become: yes
+      delegate_to: "{{ item }}"
+      loop: "{{ inventory }}"
