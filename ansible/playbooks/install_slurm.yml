@@ -44,10 +44,10 @@
 
 
 # -------------------------------------------------------------------------------
-- name: Install and Configure Slurm
-  hosts: all
-  become: yes
-  tasks:
+# - name: Install and Configure Slurm
+#   hosts: all
+#   become: yes
+#   tasks:
     - name: Install dependencies
       apt:
         name:
