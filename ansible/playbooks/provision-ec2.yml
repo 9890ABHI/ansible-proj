@@ -1,7 +1,7 @@
 ---
 - name: Create AWS EC2 Instances and Store IPs
   hosts: localhost
-  gather_facts: no
+  gather_facts: yes
   vars:
     aws_region: "us-east-1"
     instance_type: "t2.micro"
@@ -105,3 +105,58 @@
     #   loop: "{{ compute_details | map(attribute='private_ip') | list }}"
     #   delegate_to: "{{ item }}"
     #   become: yes
+    - name: Create inventory.ini content
+      set_fact:
+        inventory_content: |
+          [master]
+          {{ compute_details | selectattr('hostname', 'equalto', 'master') | map(attribute='private_ip') | first }} ansible_ssh_host={{ compute_details | selectattr('hostname', 'equalto', 'master') | map(attribute='private_ip') | first }}
+
+          [compute]
+          {% for item in compute_details %}
+          {% if item.hostname != 'master' %}
+          {{ item.private_ip }} ansible_ssh_host={{ item.private_ip }}
+          {% endif %}
+          {% endfor %}
+          
+    - name: Write inventory.ini file
+      copy:
+        content: "{{ inventory_content }}"
+        dest: "../inventory.ini"
+
+
+# creating passwordless ssh between all nodes
+
+- name: Setup Passwordless SSH
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Load compute details
+      set_fact:
+        compute_details: "{{ lookup('file', '../compute_details.json') | from_json }}"
+
+    - name: Generate SSH key pair
+      openssh_keypair:
+        path: ~/.ssh/id_rsa
+        type: rsa
+        size: 2048
+      register: ssh_keypair
+      delegate_to: localhost
+
+    - name: Distribute public SSH key to all instances
+      authorized_key:
+        user: ubuntu
+        state: present
+        key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+      loop: "{{ compute_details | map(attribute='private_ip') | list }}"
+      delegate_to: "{{ item }}"
+      become: yes
+
+    - name: Ensure correct permissions for private key
+      file:
+        path: ~/.ssh/id_rsa
+        mode: '0600'
+      delegate_to: localhost
+
+    - name: Debug SSH key
+      debug:
+        msg: "SSH key generated and distributed successfully."

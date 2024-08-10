@@ -1,7 +1,7 @@
 ---
 - name: Install and Configure Slurm on EC2 Instances
   hosts: localhost
-  gather_facts: no
+  gather_facts: yes
   vars_files:
     - "../compute_details.json"
   tasks:
@@ -11,7 +11,7 @@
 
     - name: Set up dynamic inventory
       set_fact:
-        inventory: "{{ compute_details | map(attribute='hostname') | list }}"
+        inventory: "{{ compute_details | map(attribute='private_ip') | list }}"
 
 
     - name: Remove old SSH host keys
@@ -44,10 +44,10 @@
 
 
 # -------------------------------------------------------------------------------
-# - name: Install and Configure Slurm
-#   hosts: all
-#   become: yes
-#   tasks:
+- name: Install and Configure Slurm
+  hosts: all
+  become: yes
+  tasks:
     - name: Install dependencies
       apt:
         name:
@@ -99,7 +99,7 @@
         mode: '0644'
       # when: ansible_hostname == 'master'
       vars:
-        master_ip: "{{ master_ip }}"
+        master_ip: "{{ hostvars['master'].private_ip }}"
 
     - name: Create Slurm systemd service files
       template:
