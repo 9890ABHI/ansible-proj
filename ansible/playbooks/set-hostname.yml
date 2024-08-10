@@ -1,9 +1,28 @@
 ---
+# - name: Set Hostnames for AWS EC2 Instances
+#   hosts: all
+#   become: yes
+#   vars_files:
+#     - "../compute_details.json"  # Ensure this file has details of your instances
+#   tasks:
+#     - name: Set hostname on the instance
+#       ansible.builtin.hostname:
+#         name: "{{ ansible_hostname }}"
+    
+#     - name: Update /etc/hosts with new hostname
+#       lineinfile:
+#         path: /etc/hosts
+#         line: "{{ ansible_facts.default_ipv4.address }} {{ ansible_hostname }}"
+#         state: present
+
+#     - name: Ensure hostname is consistent across reboots
+#       lineinfile:
+#         path: /etc/hostname
+#         line: "{{ ansible_hostname }}"
+#         state: present
 - name: Set Hostnames for AWS EC2 Instances
   hosts: all
   become: yes
-  vars_files:
-    - "../compute_details.json"  # Ensure this file has details of your instances
   tasks:
     - name: Set hostname on the instance
       ansible.builtin.hostname:
