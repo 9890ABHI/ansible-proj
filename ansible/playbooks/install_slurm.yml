@@ -114,12 +114,16 @@
       template:
         src: "config/slurm/slurmctld.service.j2"
         dest: "/etc/systemd/system/slurmctld.service"
-      when: ansible_hostname == 'master' 
+      vars:
+        master_ip: "{{ hostvars['master'].private_ip }}"
+      # when: ansible_hostname == 'master' 
 
     - name: Create slurmd.service file
       template:
         src: "config/slurm/slurmd.service.j2"
         dest: "/etc/systemd/system/slurmd.service"
+      vars:
+        master_ip: "{{ hostvars['compute'].private_ip }}"
       when: ansible_hostname != 'master'
     
     # - name: Enable and start Slurm services
