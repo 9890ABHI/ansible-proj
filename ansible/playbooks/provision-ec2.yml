@@ -262,18 +262,42 @@
         dest: "../compute_details.json"
 
     # -----------
-    - name: Set hostname based on private IP for each instance
-      hostname:
-        name: "{{ item.hostname }}"
+
+- name: Configure EC2 Instances
+  hosts: all # This should refer to your actual EC2 instances
+  become: yes
+  gather_facts: yes # Gather facts for each instance
+
+  tasks:
+    - name: Add instance details to /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        line: "{{ item.private_ip }} {{ item.hostname }}"
+        state: present
       loop: "{{ compute_details }}"
       become: yes
 
+    - name: Set hostname based on private IP for each instance
+      hostname:
+        name: "{{ inventory_hostname }}"
+
     - name: Ensure hostname is applied
-      shell: "hostnamectl set-hostname {{ item.hostname }}"
+      shell: "hostnamectl set-hostname {{ inventory_hostname }}"
       args:
         executable: /bin/bash
-      loop: "{{ compute_details }}"
-      become: yes
+    # -----------
+    # - name: Set hostname based on private IP for each instance
+    #   hostname:
+    #     name: "{{ item.hostname }}"
+    #   loop: "{{ compute_details }}"
+    #   become: yes
+
+    # - name: Ensure hostname is applied
+    #   shell: "hostnamectl set-hostname {{ item.hostname }}"
+    #   args:
+    #     executable: /bin/bash
+    #   loop: "{{ compute_details }}"
+    #   become: yes
     # -----------
 
     # - name: Set hostname based on private IP for each instance
