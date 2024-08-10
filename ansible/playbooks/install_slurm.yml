@@ -30,6 +30,15 @@
       loop: "{{ inventory }}"
       delegate_to: localhost
     
+    - name: Distribute public SSH key to all instances
+      authorized_key:
+        user: ubuntu
+        state: present
+        key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+      loop: "{{ inventory }}"
+      delegate_to: localhost
+      become: yes
+    
     - name: Test SSH connectivity
       command: ssh -o StrictHostKeyChecking=no -i /root/.ssh/boot-1.pem ubuntu@{{ item }} echo "Connected"
       register: ssh_test
