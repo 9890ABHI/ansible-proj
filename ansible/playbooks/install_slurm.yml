@@ -74,6 +74,8 @@
           - pkg-config
           - slurm-client
         state: present
+      vars:
+        master_ip: "{{ hostvars['master'].private_ip }}"
 
     - name: Download Slurm source
       get_url:
