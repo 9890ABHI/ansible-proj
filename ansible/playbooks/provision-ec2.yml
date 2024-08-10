@@ -46,11 +46,11 @@
       loop: "{{ all_instances }}"
       register: ec2_instances
 
-    - name: Set hostname based on tag
-      ansible.builtin.hostname:
-        name: "{{ instance.tags.Name }}"
-      delegate_to: "{{ item }}"
-      loop: "{{ ec2_instances.results }}"
+    # - name: Set hostname based on tag
+    #   ansible.builtin.hostname:
+    #     name: "{{ instance.tags.Name }}"
+    #   delegate_to: "{{ item }}"
+    #   loop: "{{ ec2_instances.results }}"
 
     - name: Save instance information to file
       ansible.builtin.copy:
