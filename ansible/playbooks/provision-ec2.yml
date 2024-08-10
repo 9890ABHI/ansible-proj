@@ -8,7 +8,7 @@
     ami_id: "{{ lookup('env', 'IMAGE_NAME') }}" # Replace with your desired AMI ID
     key_name: "{{ lookup('env', 'KEY_NAME') }}" # Replace with your AWS key pair name
     subnet_id: "{{ lookup('env', 'SUBNET_NAME') }}" # Replace with your subnet ID
-    num_computes: 2
+    num_computes: 1
 
   tasks:
     - name: Initialize compute_instances list
@@ -52,7 +52,7 @@
     #     name: "{{ item.Name }}"
     #   delegate_to: "{{ item.name }}"
     #   loop: "{{ all_instances }}"
-    
+
     - name: Set hostname based on tag
       ansible.builtin.hostname:
         name: "{{ item.instances[0].tags.Name }}"
