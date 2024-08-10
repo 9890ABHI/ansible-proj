@@ -46,7 +46,6 @@
       loop: "{{ all_instances }}"
       register: ec2_instances      
 
-
     - name: Create a list of hostnames and IPs
       set_fact:
         instances_info: >
@@ -75,6 +74,7 @@
       vars:
         ansible_ssh_private_key_file: /root/.ssh/boot-1.pem
         ansible_ssh_user: ubuntu
+        ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
 
     - name: Ensure hostname is set correctly
       delegate_to: "{{ item.private_ip }}"
@@ -82,7 +82,45 @@
       loop: "{{ instances_info }}"
       vars:
         ansible_ssh_private_key_file: /root/.ssh/boot-1.pem
-        ansible_ssh_user: ubuntu 
+        ansible_ssh_user: ubuntu
+        ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+
+    # - name: Create a list of hostnames and IPs
+    #   set_fact:
+    #     instances_info: >
+    #       {%- set instances = [] -%}
+    #       {%- for result in ec2_instances.results -%}
+    #         {%- for instance in result.instances -%}
+    #           {%- set _ = instances.append({ 'name': instance.tags.Name, 'private_ip': instance.private_ip_address }) -%}
+    #         {%- endfor -%}
+    #       {%- endfor -%}
+    #       {{ instances }}
+
+    # - name: Wait for instances to be reachable
+    #   wait_for:
+    #     host: "{{ item.private_ip }}"
+    #     port: 22
+    #     state: started
+    #     delay: 60  # Adjust delay as needed
+    #   loop: "{{ instances_info }}"
+    #   delegate_to: localhost
+
+    # - name: Set hostname on instances
+    #   delegate_to: "{{ item.private_ip }}"
+    #   ansible.builtin.hostname:
+    #     name: "{{ item.name }}"
+    #   loop: "{{ instances_info }}"
+    #   vars:
+    #     ansible_ssh_private_key_file: /root/.ssh/boot-1.pem
+    #     ansible_ssh_user: ubuntu
+
+    # - name: Ensure hostname is set correctly
+    #   delegate_to: "{{ item.private_ip }}"
+    #   command: hostnamectl set-hostname "{{ item.name }}"
+    #   loop: "{{ instances_info }}"
+    #   vars:
+    #     ansible_ssh_private_key_file: /root/.ssh/boot-1.pem
+    #     ansible_ssh_user: ubuntu 
 
     # - name: Set hostname based on tag
     #   ansible.builtin.hostname:
