@@ -1,0 +1,53 @@
+- name: Ensure SSH connectivity to master
+  hosts: localhost
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: Generate SSH key pair if not exists
+      user: ubuntu
+      ssh_keygen:
+        key_type: ed25519
+        type: rsa
+        force: yes
+      when: not ssh_keygen.stat.exists
+
+    - name: Add SSH key to agent
+      user: ubuntu
+      authorized_key:
+        user: ubuntu
+        key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+        append: yes
+
+    - name: Copy public key to master
+      copy:
+        src: ~/.ssh/id_rsa.pub
+        dest: /tmp/id_rsa.pub
+        remote_user: ubuntu
+        host: master
+        become: yes
+
+    - name: Add public key to authorized_keys on master
+      command: echo "{{ lookup('file', '/tmp/id_rsa.pub') }}" >> /home/ubuntu/.ssh/authorized_keys
+      remote_user: ubuntu
+      host: master
+      become: yes
+
+    - name: Change permissions for authorized_keys
+      file:
+        path: /home/ubuntu/.ssh/authorized_keys
+        owner: ubuntu
+        group: ubuntu
+        mode: '0600'
+        remote_user: ubuntu
+        host: master
+        become: yes
+
+    - name: Test SSH connectivity
+      command: ssh -o StrictHostKeyChecking=no ubuntu@master echo "Connected"
+      register: ssh_test
+
+    - name: Debug SSH test results
+      debug:
+        msg: "{{ ssh_test.stdout }}"
+      when: ssh_test.rc == 0

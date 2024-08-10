@@ -1,54 +1,54 @@
----
-- name: Install and Configure Slurm on EC2 Instances
-  hosts: localhost
-  gather_facts: yes
-  vars_files:
-    - "../compute_details.json"
-  tasks:
-    - name: Load compute details
-      set_fact:
-        compute_details: "{{ lookup('file', '../compute_details.json') | from_json }}"
+# ---
+# - name: Install and Configure Slurm on EC2 Instances
+#   hosts: localhost
+#   gather_facts: yes
+#   vars_files:
+#     - "../compute_details.json"
+#   tasks:
+#     - name: Load compute details
+#       set_fact:
+#         compute_details: "{{ lookup('file', '../compute_details.json') | from_json }}"
 
-    - name: Set up dynamic inventory
-      set_fact:
-        inventory: "{{ compute_details | map(attribute='private_ip') | list }}"
+#     - name: Set up dynamic inventory
+#       set_fact:
+#         inventory: "{{ compute_details | map(attribute='private_ip') | list }}"
 
 
-    - name: Remove old SSH host keys
-      command: ssh-keygen -f '/root/.ssh/known_hosts' -R "{{ item }}"
-      loop: "{{ inventory }}"
-      ignore_errors: yes
-      delegate_to: localhost
+#     - name: Remove old SSH host keys
+#       command: ssh-keygen -f '/root/.ssh/known_hosts' -R "{{ item }}"
+#       loop: "{{ inventory }}"
+#       ignore_errors: yes
+#       delegate_to: localhost
 
-    # install 
-    - name: Ensure all instances are reachable
-      wait_for:
-        host: "{{ item }}"
-        port: 22
-        state: started
-        delay: 10
-      loop: "{{ inventory }}"
-      delegate_to: localhost
+#     # install 
+#     - name: Ensure all instances are reachable
+#       wait_for:
+#         host: "{{ item }}"
+#         port: 22
+#         state: started
+#         delay: 10
+#       loop: "{{ inventory }}"
+#       delegate_to: localhost
     
-    - name: Distribute public SSH key to all instances
-      authorized_key:
-        user: ubuntu
-        state: present
-        key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-      loop: "{{ inventory }}"
-      delegate_to: localhost
-      become: yes
+#     - name: Distribute public SSH key to all instances
+#       authorized_key:
+#         user: ubuntu
+#         state: present
+#         key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+#       loop: "{{ inventory }}"
+#       delegate_to: localhost
+#       become: yes
     
-    - name: Test SSH connectivity
-      command: ssh -o StrictHostKeyChecking=no -i /root/.ssh/boot-1.pem ubuntu@{{ item }} echo "Connected"
-      register: ssh_test
-      ignore_errors: yes
-      loop: "{{ inventory }}"
-      delegate_to: localhost
+#     - name: Test SSH connectivity
+#       command: ssh -o StrictHostKeyChecking=no -i /root/.ssh/boot-1.pem ubuntu@{{ item }} echo "Connected"
+#       register: ssh_test
+#       ignore_errors: yes
+#       loop: "{{ inventory }}"
+#       delegate_to: localhost
 
-    - name: Print SSH connectivity results
-      debug:
-        msg: "{{ ssh_test.results }}"
+#     - name: Print SSH connectivity results
+#       debug:
+#         msg: "{{ ssh_test.results }}"
 
 
 
