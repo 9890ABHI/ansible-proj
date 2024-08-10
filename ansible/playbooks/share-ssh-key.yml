@@ -1,7 +1,7 @@
 ---
-- name: Ensure SSH connectivity to master
+- name: Ensure SSH key pair exists
   hosts: localhost
-  gather_facts: yes
+  gather_facts: no
   become: yes
 
   tasks:
