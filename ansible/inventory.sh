@@ -61,7 +61,7 @@ echo "successfully created Ec2 Instances"
 # echo "Update complete. Current /etc/hosts contents:"
 # cat /etc/hosts
 
-ansible-playbook playbooks/share-ssh-key.yml
+# ansible-playbook playbooks/share-ssh-key.yml
 
 echo "install slurm"
-ansible-playbook playbooks/install_slurm.yml
+# ansible-playbook playbooks/install_slurm.yml
