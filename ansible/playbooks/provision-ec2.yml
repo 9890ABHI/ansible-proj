@@ -142,6 +142,31 @@
       register: ssh_keypair
       delegate_to: localhost
 
+    - name: Ensure all instances are reachable
+      wait_for:
+        host: "{{ item }}"
+        port: 22
+        state: started
+        delay: 10
+        timeout: 300
+      loop: "{{ compute_details | map(attribute='private_ip') | list }}"
+      delegate_to: localhost
+
+    - name: Test SSH connectivity
+      command: ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@{{ item }} echo "Connected"
+      register: ssh_test
+      ignore_errors: yes
+      loop: "{{ compute_details | map(attribute='private_ip') | list }}"
+      delegate_to: localhost
+      retries: 5
+      delay: 30
+
+    - name: Print SSH connectivity results
+      debug:
+        msg: "{{ ssh_test.results }}"
+
+
+
     - name: Distribute public SSH key to all instances
       authorized_key:
         user: ubuntu
