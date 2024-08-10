@@ -44,7 +44,9 @@
         tags:
           Name: "{{ item.name }}"
       loop: "{{ all_instances }}"
-      register: ec2_instances
+      register: ec2_instances      
+      ansible.builtin.hostname:
+        name: "{{ item.name }}"
 
     # - name: Set hostname based on tag
     #   ansible.builtin.hostname:
