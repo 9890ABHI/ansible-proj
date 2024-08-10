@@ -261,12 +261,16 @@
         content: "{{ compute_details | to_nice_json }}"
         dest: "../compute_details.json"
 
+    # -----------
+
     - name: Set hostname based on private IP for each instance
       hostname:
         name: "{{ item.hostname }}"
       loop: "{{ compute_details }}"
       become: yes
-      delegate_to: "{{ item.private_ip }}"
+      remote_user: "{{ ansible_ssh_user }}"
+      private_key_file: "~/.ssh/{{ key_name }}.pem"
+      hosts: "{{ item.private_ip }}"
 
     - name: Ensure hostname is applied
       shell: "hostnamectl set-hostname {{ item.hostname }}"
@@ -274,7 +278,26 @@
         executable: /bin/bash
       loop: "{{ compute_details }}"
       become: yes
-      delegate_to: "{{ item.private_ip }}"
+      remote_user: "{{ ansible_ssh_user }}"
+      private_key_file: "~/.ssh/{{ key_name }}.pem"
+      hosts: "{{ item.private_ip }}"
+
+    # -----------
+    # - name: Set hostname based on private IP for each instance
+    #   hostname:
+    #     name: "{{ item.hostname }}"
+    #   loop: "{{ compute_details }}"
+    #   become: yes
+    #   delegate_to: "{{ item.private_ip }}"
+
+    # - name: Ensure hostname is applied
+    #   shell: "hostnamectl set-hostname {{ item.hostname }}"
+    #   args:
+    #     executable: /bin/bash
+    #   loop: "{{ compute_details }}"
+    #   become: yes
+    #   delegate_to: "{{ item.private_ip }}"
+    # -----------
 
     # try doing after ward
     # - name: Distribute /etc/hosts to all nodes
