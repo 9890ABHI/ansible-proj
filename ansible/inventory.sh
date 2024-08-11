@@ -28,43 +28,7 @@ ansible-playbook playbooks/provision-ec2.yml | tee provision-output.txt
 echo "successfully created Ec2 Instances"
 
 
-# ansible-playbook -i inventory.ini playbooks/hostname.yml
 
-# echo "get IP and hostname Ec2 Instances"
-# # Run the extract ip and hostname playbook and capture output
-# ansible-playbook playbooks/Extract_details_instances.yml | tee Extract_details.txt
-# echo "successfully get IP and hostname Ec2 Instances"
-
-
-# # add ip to /etc/hosts file
-# INSTANCE_IPS_FILE="instance-ips.txt"
-
-# # Backup the current /etc/hosts file
-# cp /etc/hosts /etc/hosts.bak
-
-# # Add entries from the file to /etc/hosts
-# while IFS= read -r line; do
-#   # Skip empty lines and lines that start with a comment
-#   [[ -z "$line" || "$line" =~ ^# ]] && continue
-
-#   # Extract the IP address and hostname from the line
-#   ip=$(echo "$line" | awk '{print $NF}')
-#   hostname=$(echo "$line" | awk '{print $1}')
-
-#   # Check if the line format is correct
-#   if [[ -n "$ip" && -n "$hostname" ]]; then
-#     # Append the IP address and hostname to /etc/hosts
-#     grep -q "^$ip" /etc/hosts || echo "$ip $hostname" >> /etc/hosts
-#   else
-#     echo "Skipping invalid line: $line"
-#   fi
-# done < "$INSTANCE_IPS_FILE"
-
-# echo "Update complete. Current /etc/hosts contents:"
-# cat /etc/hosts
-
-# ansible-playbook playbooks/set-hostname.yml
-# ansible-playbook playbooks/share-ssh-key.yml
 
 echo "install slurm"
 # ansible-playbook playbooks/install_slurm.yml
