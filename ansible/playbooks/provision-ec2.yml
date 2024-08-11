@@ -106,7 +106,7 @@
           [compute]
           {% for item in compute_details %}
           {% if item.hostname != 'master' %}
-          {{ item.private_ip }} ansible_ssh_host={{ item.private_ip }}
+          {{ item.private_ip }} ansible_ssh_host={{ item.private_ip }} ansible_ssh_private_key_file=~/.ssh/boot-1.pem
           {% endif %}
           {% endfor %}
 
