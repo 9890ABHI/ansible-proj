@@ -46,8 +46,6 @@
       loop: "{{ all_instances }}"
       register: ec2_instances
 
-
-
     - name: Save instance information to file
       ansible.builtin.copy:
         content: |
@@ -118,7 +116,7 @@
 
     - name: Write inventory.ini file
       copy:
-        content: "{{ inventory_content }}""
+        content: "{{ inventory_content }}"
         dest: "../inventory.ini"
 
 - name: Configure EC2 Instances
