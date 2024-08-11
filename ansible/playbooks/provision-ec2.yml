@@ -46,171 +46,7 @@
       loop: "{{ all_instances }}"
       register: ec2_instances
 
-    # #
 
-    #     - name: Create a list of hostnames and IPs
-    #       set_fact:
-    #         instances_info: >
-    #           {%- set instances = [] -%}
-    #           {%- for result in ec2_instances.results -%}
-    #             {%- for instance in result.instances -%}
-    #               {%- set _ = instances.append({ 'name': instance.tags.Name, 'private_ip': instance.private_ip_address }) -%}
-    #             {%- endfor -%}
-    #           {%- endfor -%}
-    #           {{ instances }}
-
-    #     - name: Wait for instances to be reachable
-    #       wait_for:
-    #         host: "{{ item.private_ip }}"
-    #         port: 22
-    #         state: started
-    #         delay: 120  # Increased delay to ensure instances are fully initialized
-    #       loop: "{{ instances_info }}"
-    #       delegate_to: localhost
-
-    #     - name: Print instance info for debugging
-    #       debug:
-    #         msg: "Instance: {{ item.name }}, IP: {{ item.private_ip }}"
-    #       loop: "{{ instances_info }}"
-
-    #     - name: Set hostname using alternative method
-    #       delegate_to: "{{ item.private_ip }}"
-    #       command: |
-    #         sudo bash -c 'echo "{{ item.name }}" > /etc/hostname'
-    #         sudo hostname "{{ item.name }}"
-    #       loop: "{{ instances_info }}"
-    #       vars:
-    #         ansible_ssh_private_key_file: /root/.ssh/boot-1.pem
-    #         ansible_ssh_user: ubuntu
-    #         ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
-
-    #     - name: Ensure hostname is set correctly
-    #       delegate_to: "{{ item.private_ip }}"
-    #       command: hostname
-    #       loop: "{{ instances_info }}"
-    #       vars:
-    #         ansible_ssh_private_key_file: /root/.ssh/boot-1.pem
-    #         ansible_ssh_user: ubuntu
-    #         ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
-
-    # #
-    #     - name: Create a list of hostnames and IPs
-    #       set_fact:
-    #         instances_info: >
-    #           {%- set instances = [] -%}
-    #           {%- for result in ec2_instances.results -%}
-    #             {%- for instance in result.instances -%}
-    #               {%- set _ = instances.append({ 'name': instance.tags.Name, 'private_ip': instance.private_ip_address }) -%}
-    #             {%- endfor -%}
-    #           {%- endfor -%}
-    #           {{ instances }}
-
-    #     - name: Wait for instances to be reachable
-    #       wait_for:
-    #         host: "{{ item.private_ip }}"
-    #         port: 22
-    #         state: started
-    #         delay: 60  # Adjust delay as needed
-    #       loop: "{{ instances_info }}"
-    #       delegate_to: localhost
-
-    #     - name: Set hostname on instances
-    #       delegate_to: "{{ item.private_ip }}"
-    #       ansible.builtin.hostname:
-    #         name: "{{ item.name }}"
-    #       loop: "{{ instances_info }}"
-    #       vars:
-    #         ansible_ssh_private_key_file: /root/.ssh/boot-1.pem
-    #         ansible_ssh_user: ubuntu
-    #         ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
-
-    #     - name: Ensure hostname is set correctly
-    #       delegate_to: "{{ item.private_ip }}"
-    #       command: hostnamectl set-hostname "{{ item.name }}"
-    #       loop: "{{ instances_info }}"
-    #       vars:
-    #         ansible_ssh_private_key_file: /root/.ssh/boot-1.pem
-    #         ansible_ssh_user: ubuntu
-    #         ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
-
-    # - name: Create a list of hostnames and IPs
-    #   set_fact:
-    #     instances_info: >
-    #       {%- set instances = [] -%}
-    #       {%- for result in ec2_instances.results -%}
-    #         {%- for instance in result.instances -%}
-    #           {%- set _ = instances.append({ 'name': instance.tags.Name, 'private_ip': instance.private_ip_address }) -%}
-    #         {%- endfor -%}
-    #       {%- endfor -%}
-    #       {{ instances }}
-
-    # - name: Wait for instances to be reachable
-    #   wait_for:
-    #     host: "{{ item.private_ip }}"
-    #     port: 22
-    #     state: started
-    #     delay: 60  # Adjust delay as needed
-    #   loop: "{{ instances_info }}"
-    #   delegate_to: localhost
-
-    # - name: Set hostname on instances
-    #   delegate_to: "{{ item.private_ip }}"
-    #   ansible.builtin.hostname:
-    #     name: "{{ item.name }}"
-    #   loop: "{{ instances_info }}"
-    #   vars:
-    #     ansible_ssh_private_key_file: /root/.ssh/boot-1.pem
-    #     ansible_ssh_user: ubuntu
-
-    # - name: Ensure hostname is set correctly
-    #   delegate_to: "{{ item.private_ip }}"
-    #   command: hostnamectl set-hostname "{{ item.name }}"
-    #   loop: "{{ instances_info }}"
-    #   vars:
-    #     ansible_ssh_private_key_file: /root/.ssh/boot-1.pem
-    #     ansible_ssh_user: ubuntu
-
-    # - name: Set hostname based on tag
-    #   ansible.builtin.hostname:
-    #     name: "{{ item.Name }}"
-    #   delegate_to: "{{ item.name }}"
-    #   loop: "{{ all_instances }}"
-    # - name: Set hostname based on tag
-    #   delegate_to: localhost
-    #   block:
-    #     - name: Create a list of hostnames and IPs
-    #       set_fact:
-    #         instances_info: >
-    #           {%- set instances = [] -%}
-    #           {%- for result in ec2_instances.results -%}
-    #             {%- for instance in result.instances -%}
-    #               {%- set _ = instances.append({ 'name': instance.tags.Name, 'private_ip': instance.private_ip_address }) -%}
-    #             {%- endfor -%}
-    #           {%- endfor -%}
-    #           {{ instances }}
-
-    #     - name: Set hostname on instances
-    #       delegate_to: "{{ item.private_ip }}"
-    #       ansible.builtin.hostname:
-    #         name: "{{ item.name }}"
-    #       loop: "{{ instances_info }}"
-
-    # - name: Ensure hostname is set correctly
-    #   delegate_to: "{{ item.private_ip }}"
-    #   command: hostnamectl set-hostname "{{ item.name }}"
-    #   loop: "{{ instances_info }}"
-    # - name: Set hostname based on tag
-    #   ansible.builtin.hostname:
-    #     name: "{{ item.instances[0].tags.Name }}"
-    #   delegate_to: "{{ item.instances[0].private_ip_address }}"
-    #   loop: "{{ ec2_instances.results }}"
-    #   when: item.instances is defined
-
-    # - name: Ensure correct hostname configuration
-    #   command: hostnamectl set-hostname "{{ item.instances[0].tags.Name }}"
-    #   delegate_to: "{{ item.instances[0].private_ip_address }}"
-    #   loop: "{{ ec2_instances.results }}"
-    #   when: item.instances is defined
 
     - name: Save instance information to file
       ansible.builtin.copy:
@@ -263,6 +99,28 @@
 
     # -----------
 
+    - name: Create inventory.ini content
+      set_fact:
+        inventory_content: |
+          [master]
+          {{ compute_details | selectattr('hostname', 'equalto', 'master') | map(attribute='private_ip') | first }} ansible_ssh_host={{ compute_details | selectattr('hostname', 'equalto', 'master') | map(attribute='private_ip') | first }}
+
+          [compute]
+          {% for item in compute_details %}
+          {% if item.hostname != 'master' %}
+          {{ item.private_ip }} ansible_ssh_host={{ item.private_ip }}
+          {% endif %}
+          {% endfor %}
+
+          [all:children]
+          master
+          compute
+
+    - name: Write inventory.ini file
+      copy:
+        content: "{{ inventory_content }}""
+        dest: "../inventory.ini"
+
 - name: Configure EC2 Instances
   hosts: all # This should refer to your actual EC2 instances
   become: yes
@@ -285,80 +143,3 @@
       shell: "hostnamectl set-hostname {{ inventory_hostname }}"
       args:
         executable: /bin/bash
-    # -----------
-    # - name: Set hostname based on private IP for each instance
-    #   hostname:
-    #     name: "{{ item.hostname }}"
-    #   loop: "{{ compute_details }}"
-    #   become: yes
-
-    # - name: Ensure hostname is applied
-    #   shell: "hostnamectl set-hostname {{ item.hostname }}"
-    #   args:
-    #     executable: /bin/bash
-    #   loop: "{{ compute_details }}"
-    #   become: yes
-    # -----------
-
-    # - name: Set hostname based on private IP for each instance
-    #   hostname:
-    #     name: "{{ item.hostname }}"
-    #   loop: "{{ compute_details }}"
-    #   become: yes
-    #   remote_user: "{{ ansible_ssh_user }}"
-    #   private_key_file: "~/.ssh/{{ key_name }}.pem"
-    #   hosts: "{{ item.private_ip }}"
-
-    # - name: Ensure hostname is applied
-    #   shell: "hostnamectl set-hostname {{ item.hostname }}"
-    #   args:
-    #     executable: /bin/bash
-    #   loop: "{{ compute_details }}"
-    #   become: yes
-    #   remote_user: "{{ ansible_ssh_user }}"
-    #   private_key_file: "~/.ssh/{{ key_name }}.pem"
-    #   hosts: "{{ item.private_ip }}"
-
-    # -----------
-    # - name: Set hostname based on private IP for each instance
-    #   hostname:
-    #     name: "{{ item.hostname }}"
-    #   loop: "{{ compute_details }}"
-    #   become: yes
-    #   delegate_to: "{{ item.private_ip }}"
-
-    # - name: Ensure hostname is applied
-    #   shell: "hostnamectl set-hostname {{ item.hostname }}"
-    #   args:
-    #     executable: /bin/bash
-    #   loop: "{{ compute_details }}"
-    #   become: yes
-    #   delegate_to: "{{ item.private_ip }}"
-    # -----------
-
-    # try doing after ward
-    # - name: Distribute /etc/hosts to all nodes
-    #   delegate_to: localhost
-    #   copy:
-    #     src: "/etc/hosts"
-    #     dest: "/etc/hosts"
-    #   loop: "{{ compute_details | map(attribute='private_ip') | list }}"
-    #   delegate_to: "{{ item }}"
-    #   become: yes
-    - name: Create inventory.ini content
-      set_fact:
-        inventory_content: |
-          [master]
-          {{ compute_details | selectattr('hostname', 'equalto', 'master') | map(attribute='private_ip') | first }} ansible_ssh_host={{ compute_details | selectattr('hostname', 'equalto', 'master') | map(attribute='private_ip') | first }}
-
-          [compute]
-          {% for item in compute_details %}
-          {% if item.hostname != 'master' %}
-          {{ item.private_ip }} ansible_ssh_host={{ item.private_ip }}
-          {% endif %}
-          {% endfor %}
-
-    - name: Write inventory.ini file
-      copy:
-        content: "{{ inventory_content }}"
-        dest: "../inventory.ini"
