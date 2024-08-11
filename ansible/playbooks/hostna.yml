@@ -39,12 +39,12 @@
       debug:
         msg: "{{ ssh_test.results }}"
 
-# - name: Configure EC2 Instances
-#   hosts: all
-#   become: yes
-#   gather_facts: yes
+- name: Configure EC2 Instances
+  hosts: all
+  become: yes
+  gather_facts: yes
 
-#   tasks:
+  tasks:
     - name: Add instance details to /etc/hosts
       lineinfile:
         path: /etc/hosts
@@ -55,10 +55,10 @@
 
     - name: Set hostname based on private IP for each instance
       hostname:
-        name: "{{ ansible_host }}"  # Use ansible_host instead of inventory_hostname
+        name: "{{ ansible_hostname }}"  # Use ansible_host instead of inventory_hostname
 
     - name: Ensure hostname is applied
-      shell: "hostnamectl set-hostname {{ ansible_host }}"
+      shell: "hostnamectl set-hostname {{ ansible_hostname }}"
       args:
         executable: /bin/bash
 
