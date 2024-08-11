@@ -28,7 +28,7 @@ ansible-playbook playbooks/provision-ec2.yml | tee provision-output.txt
 echo "successfully created Ec2 Instances"
 
 
-ansible-playbook -i inventory.ini playbooks/hostname.yml
+# ansible-playbook -i inventory.ini playbooks/hostname.yml
 
 # echo "get IP and hostname Ec2 Instances"
 # # Run the extract ip and hostname playbook and capture output
