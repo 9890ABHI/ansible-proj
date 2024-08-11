@@ -1,5 +1,5 @@
----
- - name: Install and Configure Slurm on EC2 Instances
+
+- name: Install and Configure Slurm on EC2 Instances
    hosts: localhost
    gather_facts: yes
    vars_files:
