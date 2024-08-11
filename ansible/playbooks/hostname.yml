@@ -29,7 +29,7 @@
        loop: "{{ inventory }}"
        delegate_to: localhost
 
-    - name: Test SSH connectivity
+     - name: Test SSH connectivity
        command: ssh -o StrictHostKeyChecking=no -i /root/.ssh/boot-1.pem ubuntu@{{ item }} echo "Connected"
        register: ssh_test
        ignore_errors: yes
