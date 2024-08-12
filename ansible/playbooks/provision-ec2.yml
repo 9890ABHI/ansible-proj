@@ -97,27 +97,40 @@
 
     # -----------
 
-    - name: Create inventory.ini content
-      set_fact:
-        inventory_content: |
-          [all]
-          {{ compute_details | selectattr('hostname', 'equalto', 'master') | map(attribute='private_ip') | first }} ansible_ssh_host=ubuntu ansible_ssh_private_key_file=~/.ssh/boot-1.pem
-          {% for item in compute_details %}
-          {% if item.hostname != 'master' %}
-          {{ item.private_ip }} ansible_ssh_host=ubuntu ansible_ssh_private_key_file=~/.ssh/boot-1.pem
-          {% endif %}
-          {% endfor %}
+    # - name: Create inventory.ini content
+    #   set_fact:
+    #     inventory_content: |
+    #       [all]
+    #       {{ compute_details | selectattr('hostname', 'equalto', 'master') | map(attribute='private_ip') | first }} ansible_ssh_host=ubuntu ansible_ssh_private_key_file=~/.ssh/boot-1.pem
+    #       {% for item in compute_details %}
+    #       {% if item.hostname != 'master' %}
+    #       {{ item.private_ip }} ansible_ssh_host=ubuntu ansible_ssh_private_key_file=~/.ssh/boot-1.pem
+    #       {% endif %}
+    #       {% endfor %}
 
+    #       [master]
+    #       {{ compute_details | selectattr('hostname', 'equalto', 'master') | map(attribute='private_ip') | first }} ansible_ssh_host=ubuntu ansible_ssh_private_key_file=~/.ssh/boot-1.pem
+
+    #       [compute]
+    #       {% for item in compute_details %}
+    #       {% if item.hostname != 'master' %}
+    #       {{ item.private_ip }} ansible_ssh_host=ubuntu ansible_ssh_private_key_file=~/.ssh/boot-1.pem
+    #       {% endif %}
+    #       {% endfor %}
+    - name: Save updated inventory to file
+      copy:
+        content: |
           [master]
-          {{ compute_details | selectattr('hostname', 'equalto', 'master') | map(attribute='private_ip') | first }} ansible_ssh_host=ubuntu ansible_ssh_private_key_file=~/.ssh/boot-1.pem
+          master ansible_host={{ master_instance.instances[0].public_ip_address }}
 
           [compute]
-          {% for item in compute_details %}
-          {% if item.hostname != 'master' %}
-          {{ item.private_ip }} ansible_ssh_host=ubuntu ansible_ssh_private_key_file=~/.ssh/boot-1.pem
-          {% endif %}
+          {% for instance in compute_instances.instances %}
+          compute{{ loop.index }} ansible_host={{ instance.public_ip_address }}
           {% endfor %}
 
+          [all:vars]
+          ansible_user=ubuntu
+        dest: inventory
 
 
     - name: Write inventory.ini file
